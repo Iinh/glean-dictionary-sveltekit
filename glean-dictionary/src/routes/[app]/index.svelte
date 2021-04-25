@@ -10,6 +10,8 @@
 </script>
 
 <script>
+	export let app;
+
 	import { setContext } from 'svelte';
 	import { writable } from 'svelte/store';
 
@@ -33,7 +35,7 @@
 		pageState.set({ itemType, search: $searchText, showExpired: $showExpired });
 	}
 
-	pageTitle.set(params.app);
+	pageTitle.set(app.app_name);
 </script>
 
 {#if app.prototype}
