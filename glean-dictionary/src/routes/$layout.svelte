@@ -10,4 +10,4 @@
 	<slot />
 </main>
 
-<Footer />
+<!-- <Footer /> -->

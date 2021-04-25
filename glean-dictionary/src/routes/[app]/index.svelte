@@ -2,7 +2,7 @@
 	export async function load({ page, fetch }) {
 		const res = await fetch(`/data/${page.params.app}/index.json`);
 		const app = await res.json();
-		console.log(app);
+
 		return {
 			props: { app }
 		};
@@ -51,7 +51,7 @@
 {/if}
 <p>{app.app_description}</p>
 
-<!-- <MetadataTable appName={app.app_name} item={app} schema={APPLICATION_DEFINITION_SCHEMA} /> -->
+<MetadataTable appName={app.app_name} item={app} schema={APPLICATION_DEFINITION_SCHEMA} />
 
 <TabGroup
 	active={itemType}
