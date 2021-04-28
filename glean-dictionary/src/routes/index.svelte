@@ -15,7 +15,8 @@
 
 <script>
 	export let apps;
-	// console.log(apps);
+
+	import FilterInput from '$lib/FilterInput.svelte';
 
 	const appLogos = {
 		browser: '/img/app-logos/browser.png',
@@ -59,7 +60,6 @@
 
 	function isPlatform(app) {
 		if (includes(app, 'iOS') || includes(app, 'Android') || includes(app, 'Amazon')) {
-			console.log("WHAT'S GOING ON HERE WHY IS IT NOT SHOWING ANYTHING");
 			return true;
 		}
 		return false;
@@ -79,42 +79,46 @@
 	}
 </script>
 
-<main>
-	{#if apps}
-		<div class="app-list">
-			{#each apps as app}
-				<div class="mzp-c-card mzp-c-card-extra-small has-aspect-3-2" id="card">
-					<a class="mzp-c-card-block-link" href={app.app_name} id="media-block">
-						<div class="mzp-c-card-media-wrapper" id="media-wrapper">
+<svelte:head>
+	<title>Glean Dictionary</title>
+</svelte:head>
+
+<div class="app-filter">
+	<FilterInput placeHolder="Search for an application" />
+</div>
+{#if apps}
+	<div class="app-list">
+		{#each apps as app}
+			<div class="mzp-c-card mzp-c-card-extra-small has-aspect-3-2" id="card">
+				<a class="mzp-c-card-block-link" href={app.app_name} id="media-block">
+					<div class="mzp-c-card-media-wrapper" id="media-wrapper">
+						<img
+							class="mzp-c-card-imgage"
+							src={getAppLogo(app.app_name)}
+							alt="${app.canonical_app_name} Logo"
+							id="logo-img"
+						/>
+						<!-- TODO: add platform flags -->
+						<!-- {#if isPlatform(app.app_description)}
+							<div class="corner-flag" />
 							<img
-								class="mzp-c-card-imgage"
-								src={getAppLogo(app.app_name)}
-								alt="${app.canonical_app_name} Logo"
-								id="logo-img"
+								class="platform-logo"
+								src={getPlatformLogo(app.app_description)}
+								alt="Platform Logo"
 							/>
-							<!-- Uncomment BELOW and everything dissapears ARGHHHHH WHYYYY breath Linh breath-->
-							<!-- i just want some nice platform flags is that too much to ask -->
-							<!-- {#if isPlatform(app.app_description)}
-								<div class="corner-flag" />
-								<img
-									class="platform-logo"
-									src={getPlatformLogo(app.app_description)}
-									alt="Platform Logo"
-								/>
-							{/if} -->
-						</div>
-						<div class="mzp-c-card-content">
-							<h2 class="mzp-c-card-title">{app.canonical_app_name}</h2>
-							<p class="mzp-c-card-meta" id="card-description">
-								{app.app_description}
-							</p>
-						</div>
-					</a>
-				</div>
-			{/each}
-		</div>
-	{/if}
-</main>
+						{/if} -->
+					</div>
+					<div class="mzp-c-card-content">
+						<h2 class="mzp-c-card-title">{app.canonical_app_name}</h2>
+						<p class="mzp-c-card-meta" id="card-description">
+							{app.app_description}
+						</p>
+					</div>
+				</a>
+			</div>
+		{/each}
+	</div>
+{/if}
 
 <style lang="scss">
 	@import '@mozilla-protocol/core/protocol/css/protocol.scss';

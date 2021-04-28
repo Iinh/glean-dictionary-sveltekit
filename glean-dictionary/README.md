@@ -1,38 +1,45 @@
-# create-svelte
+# Glean Dictionary
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte);
+[![CircleCI](https://circleci.com/gh/mozilla/glean-dictionary.svg?style=svg)](https://circleci.com/gh/mozilla/glean-dictionary)
 
-## Creating a project
+The Glean dictionary aims to provide a comprehensive index of datasets generated
+inside Mozilla for applications built using the
+[Glean SDK](https://mozilla.github.io/glean/book/index.html).
 
-If you're seeing this, you've probably already done this step. Congrats!
+This project is under active development. For up to date information on project
+structure and governance, see:
+
+https://wiki.mozilla.org/Data/WorkingGroups/GleanDictionary
+
+You can play with an early version of the Glean Dictionary at:
+
+https://dictionary.protosaur.dev
+
+## Getting Started
+
+You should be able to create your own local copy of the dictionary so long as
+you have [Python](https://www.python.org/) (version 3.8) and
+[node.js](https://nodejs.org/) installed. Follow these instructions:
 
 ```bash
-# create a new project in the current directory
-npm init svelte@next
+# Create and activate a python virtual environment.
+python3 -m venv venv/
+source venv/bin/activate
+pip install -r requirements.txt
 
-# create a new project in my-app
-npm init svelte@next my-app
-```
+# Build data needed by dashboard
+./scripts/build-glean-metadata.py
 
-> Note: the `@next` is temporary
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
+# Install npm dependencies and start a local
+# instance of the GUI
+npm install
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
 ```
 
-## Building
+If that worked, you should be able to see a local version of Glean at
+http://localhost:5000
 
-Before creating a production version of your app, install an [adapter](https://kit.svelte.dev/docs#adapters) for your target environment. Then:
+## Contributing
 
-```bash
-npm run build
-```
-
-> You can preview the built app with `npm run preview`, regardless of whether you installed an adapter. This should _not_ be used to serve your app in production.
+For more information on contributing, see [CONTRIBUTING.md](./CONTRIBUTING.md)
+in the root of this repository.

@@ -13,7 +13,7 @@ module.exports = {
     defaults: {
           style: "scss",
         },
-        scss: {
+    scss: {
           prependData: `@import 'node_modules/@mozilla-protocol/core/protocol/css/protocol.scss';`,
         },
   }),

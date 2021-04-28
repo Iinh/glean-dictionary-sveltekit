@@ -15,17 +15,15 @@
 	import { setContext } from 'svelte';
 	import { writable } from 'svelte/store';
 
-	import { getAppData } from '../../state/api';
+	import { APPLICATION_DEFINITION_SCHEMA } from '$lib/data/schemas';
+	import AppAlert from '$lib/AppAlert.svelte';
+	import ItemList from '$lib/ItemList.svelte';
+	import MetadataTable from '$lib/MetadataTable.svelte';
+	import Pill from '$lib/Pill.svelte';
+	import { TabGroup, Tab, TabContent } from '$lib/tabs';
+	import PageTitle from '$lib/PageTitle.svelte';
+	import { pageState } from '$lib/state/stores';
 
-	import { APPLICATION_DEFINITION_SCHEMA } from '../../data/schemas';
-	import AppAlert from '../../lib/AppAlert.svelte';
-	import ItemList from '../../lib/ItemList.svelte';
-	import MetadataTable from '../../lib/MetadataTable.svelte';
-	import NotFound from '../../lib/NotFound.svelte';
-	import Pill from '../../lib/Pill.svelte';
-	import { TabGroup, Tab, TabContent } from '../../lib/tabs';
-	import PageTitle from '../../lib/PageTitle.svelte';
-	import { pageState, pageTitle } from '../../state/stores';
 	let itemType = $pageState.itemType || 'metrics';
 	const searchText = writable($pageState.search || '');
 	setContext('searchText', searchText);
@@ -34,9 +32,11 @@
 	$: {
 		pageState.set({ itemType, search: $searchText, showExpired: $showExpired });
 	}
-
-	pageTitle.set(app.app_name);
 </script>
+
+<svelte:head>
+	<title>{app.app_name}</title>
+</svelte:head>
 
 {#if app.prototype}
 	<AppAlert

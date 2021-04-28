@@ -18,6 +18,18 @@ def _serialize_sets(obj):
     return obj
 
 
+def _normalize_metrics(name):
+    # replace . with _ so sirv doesn't think that
+    # a metric is a file
+    metric_name = name.replace(".", "_")
+
+    # if a metric name starts with "metrics", uBlock Origin
+    # will block the network call to get the JSON resource
+    # See: https://github.com/mozilla/glean-dictionary/issues/550
+    # To get around this, we add "data" to metric names
+    return f"data_{metric_name}"
+
+
 # ETL specific snakecase taken from:
 # https://github.com/mozilla/bigquery-etl/blob/master/bigquery_etl/util/common.py
 #
@@ -140,7 +152,7 @@ for (app_name, app_group) in app_groups.items():
                     metric.definition,
                     name=metric.identifier,
                     annotation=(
-                        annotations_index.get(app_name, {})
+                        annotations_index.get(metric.definition["origin"], {})
                         .get("metrics", {})
                         .get(metric.identifier)
                     ),
@@ -185,7 +197,7 @@ for (app_name, app_group) in app_groups.items():
                         ping.definition,
                         variants=[],
                         annotation=(
-                            annotations_index.get(app_name, {})
+                            annotations_index.get(ping.definition["origin"], {})
                             .get("pings", {})
                             .get(ping.identifier)
                         ),
@@ -230,30 +242,36 @@ for (app_name, app_group) in app_groups.items():
                 )
             )
 
-        # write ping descriptions
-        for ping_data in app_data["pings"]:
-            open(os.path.join(app_ping_dir, f"{ping_data['name']}.json"), "w").write(
-                json.dumps(
-                    dict(
-                        ping_data,
-                        metrics=[
-                            metric
-                            for metric in metric_pings["data"]
-                            if ping_data["name"] in metric["pings"]
-                        ],
-                    ),
-                    default=_serialize_sets,
-                )
+    # write ping descriptions
+    for ping_data in app_data["pings"]:
+        open(os.path.join(app_ping_dir, f"{ping_data['name']}.json"), "w").write(
+            json.dumps(
+                dict(
+                    ping_data,
+                    metrics=[
+                        metric
+                        for metric in metric_pings["data"]
+                        if ping_data["name"] in metric["pings"]
+                    ],
+                ),
+                default=_serialize_sets,
             )
+        )
 
-        for metric_data in app_metrics.values():
-            open(
-                os.path.join(app_metrics_dir, f"{metric_data['name'].replace('.', '_')}.json"), "w"
-            ).write(
-                json.dumps(
-                    metric_data,
-                    default=_serialize_sets,
-                )
+    # write metrics
+    for metric_data in app_metrics.values():
+        open(
+            os.path.join(app_metrics_dir, f"{_normalize_metrics(metric_data['name'])}.json"), "w"
+        ).write(
+            json.dumps(
+                metric_data,
+                default=_serialize_sets,
             )
+        )
 
-        open(os.path.join(app_dir, "index.json"), "w").write(json.dumps(app_data))
+    # sort the information in the app-level summary, then write it out
+    # (we don't sort application id information, that's already handled
+    # above)
+    for key in ["metrics", "pings"]:
+        app_data[key].sort(key=lambda v: v["name"])
+    open(os.path.join(app_dir, "index.json"), "w").write(json.dumps(app_data))

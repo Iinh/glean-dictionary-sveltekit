@@ -1,10 +1,12 @@
 <script context="module">
 	export async function load({ page, fetch }) {
 		const tableName = page.params.table.replace(/\./g, '_');
-		const res = await fetch(`/data/${page.params.app}/tables/${tableName}.json`);
+		const res = await fetch(
+			`/data/${page.params.app}/tables/${page.params.app_id}/${tableName}.json`
+		);
 		const table = await res.json();
 		const app = page.params.app;
-		console.log(page.params);
+
 		return {
 			props: { table, app }
 		};
@@ -16,21 +18,22 @@
 	import { setContext } from 'svelte';
 	import { writable } from 'svelte/store';
 
-	import SchemaViewer from 'lib/SchemaViewer.svelte';
+	import SchemaViewer from '$lib/SchemaViewer.svelte';
+	import PageTitle from '$lib/PageTitle.svelte';
 
-	import { pageState, pageTitle } from '../state/stores';
-
-	import NotFound from 'lib/NotFound.svelte';
-	import PageTitle from 'lib/PageTitle.svelte';
+	import { pageState } from '$lib/state/stores';
 
 	const searchText = writable($pageState.search || '');
 	setContext('searchText', searchText);
+
 	$: {
 		pageState.set({ search: $searchText });
 	}
-
-	pageTitle.set(`${table} table | ${app.appId}`);
 </script>
+
+<svelte:head>
+	<title>{table} table | {app.appId}</title>
+</svelte:head>
 
 <PageTitle text={`Table <code>${table.name}</code> for ${table.app_id}`} />
 <table>
@@ -55,7 +58,7 @@
 </table>
 <SchemaViewer {app} nodes={table.bq_schema} />
 
-<style lang="scss">
-	@import 'main.scss';
+<style>
+	@import '../../../../../main.scss';
 	@include metadata-table;
 </style>
