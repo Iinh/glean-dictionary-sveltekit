@@ -1,11 +1,9 @@
 [build]
 command = """
-    scripts/build-glean-metadata.py
     npm run build
-    fi
 """
 environment = { PYTHON_VERSION = "3.7" }
-publish = "public"
+publish = "static"
 
 [context.production]
   [context.production.environment]
