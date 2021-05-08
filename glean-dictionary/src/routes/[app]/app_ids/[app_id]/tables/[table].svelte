@@ -32,7 +32,7 @@
 </script>
 
 <svelte:head>
-	<title>{table} table | {app.appId}</title>
+	<title>{table.name} table | {table.app_id}</title>
 </svelte:head>
 
 <PageTitle text={`Table <code>${table.name}</code> for ${table.app_id}`} />

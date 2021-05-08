@@ -1,11 +1,15 @@
 <script context="module">
 	export async function load({ page, fetch }) {
 		const res = await fetch(`/data/${page.params.app}/index.json`);
+		if (res.ok) {
 		const app = await res.json();
+			return {
+				props: { app }
+			};
+		}
 
-		return {
-			props: { app }
-		};
+		const { message } = await res.json();
+		return { error: new Error(message) };
 	}
 </script>
 
@@ -14,6 +18,10 @@
 
 	import { setContext } from 'svelte';
 	import { writable } from 'svelte/store';
+
+
+	import { mapValues, pickBy } from "lodash";
+  	import { stringify} from "query-string";
 
 	import { APPLICATION_DEFINITION_SCHEMA } from '$lib/data/schemas';
 	import AppAlert from '$lib/AppAlert.svelte';
@@ -29,9 +37,20 @@
 	setContext('searchText', searchText);
 	const showExpired = writable($pageState.showExpired || false);
 	setContext('showExpired', showExpired);
-	$: {
-		pageState.set({ itemType, search: $searchText, showExpired: $showExpired });
+
+	function pathName() {
+		const simplifiedState = mapValues(
+      pickBy($pageState, (v) => (typeof v !== "string" && v) || v.length > 0),
+      (v) => (typeof v === "boolean" ? +v : v)
+    );
+	const query = stringify(simplifiedState);
+    const path = `${window.location.pathname}${query ? `?${query}` : ""}`;
+    window.history.replaceState(null, undefined, path);
 	}
+
+
+	$: {		pageState.set({ itemType, search: $searchText, showExpired: $showExpired })
+    typeof window === "undefined" ? console.log("SSR") : pathName()}
 </script>
 
 <svelte:head>
